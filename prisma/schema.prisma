@@ -163,6 +163,11 @@ model Event {
   time        String
   type        String // "live" | "atelier" | "publication" | "rappel"
   description String?
+  // Minutes before the event to fire the reminder (0/absent = at start time).
+  remindMinutesBefore Int?
+  // Set when this event was auto-created from a Live (WIRING_PLAN B2) — lets the
+  // app deep-link the calendar entry to the live/replay player.
+  liveId      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

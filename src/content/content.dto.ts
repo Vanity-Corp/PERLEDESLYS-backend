@@ -64,6 +64,7 @@ export const eventSchema = z.object({
   time: z.string().min(1),
   type: z.enum(['live', 'atelier', 'publication', 'rappel']),
   description: z.string().optional(),
+  remindMinutesBefore: z.number().int().min(0).optional(),
 });
 export const eventUpdateSchema = eventSchema.partial();
 export type EventDto = z.infer<typeof eventSchema>;

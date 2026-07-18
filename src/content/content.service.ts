@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { type Live } from '../prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import type {
   ArticleDto,
@@ -78,20 +79,48 @@ export class ContentService {
   }
 
   // ---- Lives ----
+  // Each live is mirrored to a linked calendar Event (type "live", `liveId`
+  // set) so it shows on the calendar and can trigger a reminder + deep-link to
+  // the player (WIRING_PLAN B2). The sync runs on every create/update; deleting
+  // a live removes its linked event.
+  private async syncLiveEvent(live: Live) {
+    const data = {
+      title: live.title,
+      date: live.date,
+      time: live.time,
+      type: 'live',
+      description: live.description,
+      liveId: live.id,
+    };
+    const existing = await this.prisma.event.findFirst({
+      where: { liveId: live.id },
+    });
+    if (existing) {
+      await this.prisma.event.update({ where: { id: existing.id }, data });
+    } else {
+      await this.prisma.event.create({ data });
+    }
+  }
+
   listLives() {
     return this.prisma.live.findMany({ orderBy: { createdAt: 'desc' } });
   }
-  createLive(dto: LiveDto) {
-    return this.prisma.live.create({ data: dto });
+  async createLive(dto: LiveDto) {
+    const live = await this.prisma.live.create({ data: dto });
+    await this.syncLiveEvent(live);
+    return live;
   }
   async updateLive(id: string, dto: Partial<LiveDto>) {
     if (!(await this.prisma.live.findUnique({ where: { id } })))
       throw new NotFoundException('Live introuvable.');
-    return this.prisma.live.update({ where: { id }, data: dto });
+    const live = await this.prisma.live.update({ where: { id }, data: dto });
+    await this.syncLiveEvent(live);
+    return live;
   }
   async deleteLive(id: string) {
     if (!(await this.prisma.live.findUnique({ where: { id } })))
       throw new NotFoundException('Live introuvable.');
+    await this.prisma.event.deleteMany({ where: { liveId: id } });
     await this.prisma.live.delete({ where: { id } });
   }
 
