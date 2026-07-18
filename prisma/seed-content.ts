@@ -12,6 +12,10 @@ const prisma = new PrismaClient({ adapter: createPgAdapter() });
 
 const img = (seed: string) => `https://picsum.photos/seed/${seed}/800/600`;
 
+// Test Vimeo video used for every seeded video & live (WIRING_PLAN B4) until
+// the client sets real links in the dashboard.
+const TEST_VIMEO = 'https://vimeo.com/17433286?h=6bcdf4c934';
+
 const RECIPES = [
   {
     id: 'couscous-royal',
@@ -81,6 +85,7 @@ const VIDEOS = [
     category: 'Prise en main',
     description:
       'La vidéo de mise en service complète, comme une visio personnalisée : présentation, étapes indispensables et premiers conseils.',
+    vimeoUrl: TEST_VIMEO,
   },
   {
     id: 'nettoyage-entretien',
@@ -89,6 +94,7 @@ const VIDEOS = [
     duration: '07:15',
     category: 'Entretien',
     description: 'Les bons gestes pour garder votre Thermomix impeccable.',
+    vimeoUrl: TEST_VIMEO,
   },
 ];
 
@@ -121,6 +127,7 @@ const LIVES = [
     status: 'À venir',
     description: 'Le couscous signature, pas à pas, avec vos questions en direct.',
     platform: 'Instagram Live',
+    vimeoUrl: TEST_VIMEO,
   },
   {
     id: 'live-ftour-express',
@@ -131,6 +138,7 @@ const LIVES = [
     status: 'Replay',
     description: "Menu du f'tour en 45 min chrono.",
     platform: 'YouTube',
+    vimeoUrl: TEST_VIMEO,
   },
 ];
 

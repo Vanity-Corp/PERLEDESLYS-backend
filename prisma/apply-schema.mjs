@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS "videos" (
   "duration" TEXT NOT NULL,
   "category" TEXT NOT NULL,
   "description" TEXT NOT NULL,
+  "vimeoUrl" TEXT,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "videos_pkey" PRIMARY KEY ("id")
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS "lives" (
   "status" TEXT NOT NULL,
   "description" TEXT NOT NULL,
   "platform" TEXT NOT NULL,
+  "vimeoUrl" TEXT,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "lives_pkey" PRIMARY KEY ("id")
@@ -166,6 +168,9 @@ try {
   await client.query('ALTER TABLE "users" ALTER COLUMN "firstName" DROP NOT NULL');
   await client.query('ALTER TABLE "users" ALTER COLUMN "lastName" DROP NOT NULL');
   await client.query('ALTER TABLE "users" ALTER COLUMN "email" DROP NOT NULL');
+  // Vimeo link columns (WIRING_PLAN B4) on pre-existing content tables.
+  await client.query('ALTER TABLE "videos" ADD COLUMN IF NOT EXISTS "vimeoUrl" TEXT');
+  await client.query('ALTER TABLE "lives" ADD COLUMN IF NOT EXISTS "vimeoUrl" TEXT');
   console.log('Schema applied (users, app_settings, enums).');
 } catch (e) {
   console.error('Schema apply failed:', e.message);

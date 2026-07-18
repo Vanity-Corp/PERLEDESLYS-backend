@@ -27,6 +27,7 @@ export const videoSchema = z.object({
   duration: z.string().min(1),
   category: z.string().min(1),
   description: z.string(),
+  vimeoUrl: z.string().optional(),
 });
 export const videoUpdateSchema = videoSchema.partial();
 export type VideoDto = z.infer<typeof videoSchema>;
@@ -51,6 +52,7 @@ export const liveSchema = z.object({
   status: z.enum(['À venir', 'En direct', 'Replay']),
   description: z.string(),
   platform: z.string().min(1),
+  vimeoUrl: z.string().optional(),
 });
 export const liveUpdateSchema = liveSchema.partial();
 export type LiveDto = z.infer<typeof liveSchema>;

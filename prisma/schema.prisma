@@ -117,6 +117,9 @@ model Video {
   duration    String
   category    String
   description String
+  // Vimeo link the admin pastes (vimeo.com/ID?h=HASH or player URL). The app
+  // parses id+hash from it and plays via the Vimeo player. (WIRING_PLAN B4)
+  vimeoUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -145,6 +148,8 @@ model Live {
   status      String // "À venir" | "En direct" | "Replay"
   description String
   platform    String
+  // Vimeo link for the live stream / replay (WIRING_PLAN B4).
+  vimeoUrl    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
