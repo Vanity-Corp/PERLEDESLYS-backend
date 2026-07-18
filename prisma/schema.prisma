@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Prisma 7 setup:
+//   • The new `prisma-client` generator emits into ../src/generated/prisma.
+//     `moduleFormat = "cjs"` keeps the generated client CommonJS so NestJS
+//     needs NO ESM migration. Consumers import it via the src/prisma/client.ts
+//     barrel (single place to update if the output path changes).
+//   • NO `url` in the datasource — the URL lives in prisma.config.ts for the
+//     CLI (migrate/db push), and the @prisma/adapter-pg driver adapter supplies
+//     it to PrismaClient at runtime (see src/prisma/prisma.service.ts).
+//   • DATABASE_URL is the direct `postgres://` URL of the local Prisma Postgres
+//     server (`prisma dev` prints it — port 51214); the pg adapter needs a
+//     plain postgres:// URL, not the `prisma+postgres://` proxy protocol.
+// Rationale recorded in BACKEND_PLAN.md Phase 1.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Native-app user account states (see BACKEND_PLAN.md "Auth model").
+//   PENDING   — registered, credentials valid, but no access to app features.
+//   ACTIVE    — validated with the global activation code; full access.
+//   SUSPENDED — access revoked by an admin from the dashboard (ActiveUserGuard
+//               denies anything other than ACTIVE, so suspended users are
+//               locked out until reactivated).
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+// Roles let the same table back both native-app members and dashboard admins.
+// The dashboard login rejects non-ADMIN roles; the native app is for MEMBERs.
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+model User {
+  id           String     @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String     @unique
+  username     String     @unique
+  passwordHash String
+  role         UserRole   @default(MEMBER)
+  status       UserStatus @default(PENDING)
+  isActivated  Boolean    @default(false)
+
+  // Audit trail for activation. `activationCodeUsed` records WHICH code the
+  // user activated with, so a later admin change to the global code never
+  // affects them, and a future migration to per-user invite codes is trivial.
+  activatedAt        DateTime?
+  activationCodeUsed String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// Global application settings — a single-row (singleton) table. The activation
+// code is stored here, never hardcoded. Changing it only affects FUTURE
+// activations (already-ACTIVE users are never re-checked).
+model AppSettings {
+  id             String   @id @default(cuid())
+  activationCode String
+  updatedAt      DateTime @updatedAt
+
+  @@map("app_settings")
+}
