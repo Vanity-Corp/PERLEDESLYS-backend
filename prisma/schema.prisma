@@ -77,3 +77,117 @@ model AppSettings {
 
   @@map("app_settings")
 }
+
+// ============================================================================
+// Content (BACKEND_PLAN.md Phase 5). Field names mirror the native app's
+// content types (PERLEDESLYS-Native-App/src/types/content.ts) so the app can
+// swap mock-data for fetches with no UI changes. Images are stored as URL
+// strings (the app renders remote URLs via expo-image); `ingredients`/`steps`
+// are JSON to match the app's array shapes. Ids default to cuid but can be set
+// explicitly (the seed uses the app's human slugs like "couscous-royal").
+// ============================================================================
+
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  image       String
+  time        String
+  difficulty  String // "Facile" | "Moyen" | "Avancé"
+  category    String
+  portions    Int
+  description String
+  cookidooUrl String
+  isNew       Boolean  @default(false)
+  ingredients Json // [{ label, qty }]
+  steps       Json // string[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("recipes")
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  image       String
+  duration    String
+  category    String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("videos")
+}
+
+model Article {
+  id        String   @id @default(cuid())
+  title     String
+  excerpt   String
+  image     String
+  readTime  String
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("articles")
+}
+
+model Live {
+  id          String   @id @default(cuid())
+  title       String
+  date        String
+  time        String
+  image       String
+  status      String // "À venir" | "En direct" | "Replay"
+  description String
+  platform    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("lives")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        String // ISO yyyy-mm-dd
+  time        String
+  type        String // "live" | "atelier" | "publication" | "rappel"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  q         String
+  a         String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faq_items")
+}
+
+// Singletons — one row each.
+model WelcomeMessage {
+  id        String   @id @default(cuid())
+  subject   String
+  body      String
+  updatedAt DateTime @updatedAt
+
+  @@map("welcome_message")
+}
+
+model FounderInfo {
+  id        String   @id @default(cuid())
+  name      String
+  fullName  String
+  bio       String
+  avatar    String
+  updatedAt DateTime @updatedAt
+
+  @@map("founder_info")
+}

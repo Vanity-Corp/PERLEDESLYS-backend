@@ -44,6 +44,103 @@ CREATE TABLE IF NOT EXISTS "app_settings" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX IF NOT EXISTS "users_username_key" ON "users"("username");
+
+-- Content tables (BACKEND_PLAN.md Phase 5).
+CREATE TABLE IF NOT EXISTS "recipes" (
+  "id" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "image" TEXT NOT NULL,
+  "time" TEXT NOT NULL,
+  "difficulty" TEXT NOT NULL,
+  "category" TEXT NOT NULL,
+  "portions" INTEGER NOT NULL,
+  "description" TEXT NOT NULL,
+  "cookidooUrl" TEXT NOT NULL,
+  "isNew" BOOLEAN NOT NULL DEFAULT false,
+  "ingredients" JSONB NOT NULL,
+  "steps" JSONB NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "recipes_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "videos" (
+  "id" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "image" TEXT NOT NULL,
+  "duration" TEXT NOT NULL,
+  "category" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "videos_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "articles" (
+  "id" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "excerpt" TEXT NOT NULL,
+  "image" TEXT NOT NULL,
+  "readTime" TEXT NOT NULL,
+  "category" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "articles_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "lives" (
+  "id" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "date" TEXT NOT NULL,
+  "time" TEXT NOT NULL,
+  "image" TEXT NOT NULL,
+  "status" TEXT NOT NULL,
+  "description" TEXT NOT NULL,
+  "platform" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "lives_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "events" (
+  "id" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "date" TEXT NOT NULL,
+  "time" TEXT NOT NULL,
+  "type" TEXT NOT NULL,
+  "description" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "events_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "faq_items" (
+  "id" TEXT NOT NULL,
+  "q" TEXT NOT NULL,
+  "a" TEXT NOT NULL,
+  "order" INTEGER NOT NULL DEFAULT 0,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "faq_items_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "welcome_message" (
+  "id" TEXT NOT NULL,
+  "subject" TEXT NOT NULL,
+  "body" TEXT NOT NULL,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "welcome_message_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE IF NOT EXISTS "founder_info" (
+  "id" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "fullName" TEXT NOT NULL,
+  "bio" TEXT NOT NULL,
+  "avatar" TEXT NOT NULL,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "founder_info_pkey" PRIMARY KEY ("id")
+);
 `;
 
 const connectionString = (process.env.DATABASE_URL ?? '')
