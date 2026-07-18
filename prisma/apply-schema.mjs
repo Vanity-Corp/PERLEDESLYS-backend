@@ -20,9 +20,9 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS "users" (
   "id" TEXT NOT NULL,
-  "firstName" TEXT NOT NULL,
-  "lastName" TEXT NOT NULL,
-  "email" TEXT NOT NULL,
+  "firstName" TEXT,
+  "lastName" TEXT,
+  "email" TEXT,
   "username" TEXT NOT NULL,
   "passwordHash" TEXT NOT NULL,
   "role" "UserRole" NOT NULL DEFAULT 'MEMBER',
@@ -160,6 +160,12 @@ try {
   await client.query(
     `ALTER TYPE "UserStatus" ADD VALUE IF NOT EXISTS 'SUSPENDED'`,
   );
+  // Registration is username+password only (WIRING_PLAN B1): relax NOT NULL on
+  // the legacy name/email columns of a pre-existing users table (no-op if
+  // already nullable).
+  await client.query('ALTER TABLE "users" ALTER COLUMN "firstName" DROP NOT NULL');
+  await client.query('ALTER TABLE "users" ALTER COLUMN "lastName" DROP NOT NULL');
+  await client.query('ALTER TABLE "users" ALTER COLUMN "email" DROP NOT NULL');
   console.log('Schema applied (users, app_settings, enums).');
 } catch (e) {
   console.error('Schema apply failed:', e.message);

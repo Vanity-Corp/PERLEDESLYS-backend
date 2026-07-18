@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -42,13 +43,9 @@ export class AuthService {
   // Register → create a PENDING member. Returns a token so the app can call
   // /auth/activate as the authenticated-but-pending user.
   async register(dto: RegisterDto): Promise<AuthResult> {
-    const [emailTaken, usernameTaken] = await Promise.all([
-      this.prisma.user.findUnique({ where: { email: dto.email } }),
-      this.prisma.user.findUnique({ where: { username: dto.username } }),
-    ]);
-    if (emailTaken) {
-      throw new ConflictException('Cet email est déjà utilisé.');
-    }
+    const usernameTaken = await this.prisma.user.findUnique({
+      where: { username: dto.username },
+    });
     if (usernameTaken) {
       throw new ConflictException("Ce nom d'utilisateur est déjà pris.");
     }
@@ -56,9 +53,6 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
     const user = await this.prisma.user.create({
       data: {
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        email: dto.email,
         username: dto.username,
         passwordHash,
         role: UserRole.MEMBER,
@@ -100,6 +94,14 @@ export class AuthService {
     }
     if (user.status === UserStatus.ACTIVE) {
       return { token: this.issueToken(user), user: this.sanitize(user) };
+    }
+    // A suspended account must not be able to reactivate itself by re-entering
+    // the code — only an admin can restore it (PATCH /admin/members/:id).
+    if (user.status === UserStatus.SUSPENDED) {
+      throw new ForbiddenException({
+        code: 'ACCOUNT_SUSPENDED',
+        message: 'Compte suspendu. Contactez la conseillère.',
+      });
     }
 
     const currentCode = await this.settings.getActivationCode();

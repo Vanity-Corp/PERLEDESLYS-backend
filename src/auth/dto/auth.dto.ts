@@ -1,12 +1,8 @@
 import { z } from 'zod';
 
-// Registration collects the full profile (BACKEND_PLAN.md "Register" flow).
-// Kept intentionally light on rules — the client wants a low-friction signup;
-// email format + minimum password length are the only hard constraints.
+// Registration is username + password only (privacy — WIRING_PLAN B1). No name
+// or email is collected, so there's nothing personal to leak.
 export const registerSchema = z.object({
-  firstName: z.string().trim().min(1, 'Le prénom est requis.'),
-  lastName: z.string().trim().min(1, 'Le nom est requis.'),
-  email: z.string().trim().toLowerCase().email('Email invalide.'),
   username: z
     .string()
     .trim()

@@ -45,10 +45,14 @@ enum UserRole {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  firstName    String
-  lastName     String
-  email        String     @unique
+  id       String @id @default(cuid())
+  // Registration only requires username + password (privacy — BACKEND_PLAN /
+  // WIRING_PLAN B1). firstName/lastName/email are optional: kept nullable for
+  // the seeded admin (who logs into the dashboard by email) and any legacy
+  // rows, but native sign-up never sets them.
+  firstName    String?
+  lastName     String?
+  email        String?    @unique
   username     String     @unique
   passwordHash String
   role         UserRole   @default(MEMBER)
