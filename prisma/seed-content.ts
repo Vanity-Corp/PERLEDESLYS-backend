@@ -72,7 +72,9 @@ const RECIPES = [
 
 const VIDEOS = [
   {
-    id: 'mise-en-service-tm7',
+    // Matches FIRST_STEPS_VIDEO_ID in the native app (constants/content.ts) so
+    // the "Mes premiers pas" screen can resolve this video's metadata.
+    id: 'premiers-pas-tm7',
     title: 'Mise en service du TM7 — mes premiers pas',
     image: img('video-mise-en-service'),
     duration: '18:42',
