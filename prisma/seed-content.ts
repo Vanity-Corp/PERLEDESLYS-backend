@@ -190,7 +190,27 @@ async function seedCollection(
   }
 }
 
+// `pnpm db:seed:content --reset` wipes ALL content first, then reseeds. Use it
+// to pick up changes to this file's data (the seed is otherwise idempotent and
+// skips non-empty collections). WARNING: this deletes content added via the
+// dashboard too — it's meant for dev/demo data, not production content.
+async function resetContent() {
+  await prisma.recipe.deleteMany();
+  await prisma.video.deleteMany();
+  await prisma.article.deleteMany();
+  await prisma.live.deleteMany();
+  await prisma.event.deleteMany();
+  await prisma.faqItem.deleteMany();
+  await prisma.welcomeMessage.deleteMany();
+  await prisma.founderInfo.deleteMany();
+  console.log('Reset: all content deleted.');
+}
+
 async function main() {
+  if (process.argv.includes('--reset')) {
+    await resetContent();
+  }
+
   await seedCollection(
     'recipes',
     () => prisma.recipe.count(),

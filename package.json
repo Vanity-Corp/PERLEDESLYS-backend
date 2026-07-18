@@ -18,6 +18,7 @@
     "db:push:pg": "node prisma/apply-schema.mjs",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:content": "tsx prisma/seed-content.ts",
+    "db:reseed:content": "tsx prisma/seed-content.ts --reset",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
